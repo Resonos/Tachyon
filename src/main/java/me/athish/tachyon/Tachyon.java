@@ -130,7 +130,9 @@ public final class Tachyon extends JavaPlugin {
         }
 
         Location pasteLocation = player.getLocation();
+        long start = System.currentTimeMillis();
         schematic.pasteBlocks(pasteLocation);
-        player.sendMessage("Schematic pasted successfully.");
+        long end = System.currentTimeMillis();
+        player.sendMessage("Schematic pasted successfully in " + (end - start) + "ms.");
     }
 }

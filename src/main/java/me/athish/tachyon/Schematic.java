@@ -1,5 +1,6 @@
 package me.athish.tachyon;
 
+import me.athish.tachyon.block.BlockChanger;
 import me.athish.tachyon.serialization.SerializableLocation;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -46,7 +47,8 @@ public class Schematic implements Serializable {
             Location loc = entry.getKey().toLocation();
             loc.subtract(originLoc);
             loc.add(pasteLocation);
-            world.getBlockAt(loc).setType(entry.getValue());
+            BlockChanger.setBlock(loc, entry.getValue());
+            //world.getBlockAt(loc).setType(entry.getValue());
         }
     }
 
