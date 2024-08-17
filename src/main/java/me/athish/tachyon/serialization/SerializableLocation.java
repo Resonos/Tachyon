@@ -6,14 +6,11 @@ import org.bukkit.World;
 
 import java.io.Serializable;
 
-public class SerializableLocation {
-    private String worldName;
-    private double x, y, z;
-    private float yaw, pitch;
-
-    // no-arg constructor for Kryo
-    public SerializableLocation() {
-    }
+public class SerializableLocation implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private final String worldName;
+    private final double x, y, z;
+    private final float yaw, pitch;
 
     public SerializableLocation(Location location) {
         this.worldName = location.getWorld().getName();

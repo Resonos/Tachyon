@@ -117,6 +117,8 @@ public final class Tachyon extends JavaPlugin {
         } catch (IOException e) {
             e.printStackTrace();
             player.sendMessage("Error loading schematic: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
