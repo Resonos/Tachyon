@@ -79,8 +79,8 @@ public final class Tachyon extends JavaPlugin {
             return;
         }
 
-        Schematic schematic = new Schematic();
-        schematic.copyBlocks(first, second, player.getLocation());
+        Schematic schematic = new Schematic(first, second);
+        schematic.setOrigin(player.getLocation());
         Schematic.setPlayerSchematic(player.getUniqueId(), schematic);
         player.sendMessage("Blocks copied successfully.");
     }
@@ -131,7 +131,7 @@ public final class Tachyon extends JavaPlugin {
 
         Location pasteLocation = player.getLocation();
         long start = System.currentTimeMillis();
-        schematic.pasteBlocks(pasteLocation);
+        schematic.pasteAsync(pasteLocation);
         long end = System.currentTimeMillis();
         player.sendMessage("Schematic pasted successfully in " + (end - start) + "ms.");
     }
