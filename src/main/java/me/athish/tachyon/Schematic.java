@@ -40,8 +40,11 @@ public class Schematic implements Serializable {
 
     public void pasteBlocks(Location pasteLocation) {
         World world = pasteLocation.getWorld();
+        Location originLoc = origin.toLocation();
         for (Map.Entry<SerializableLocation, Material> entry : blocks.entrySet()) {
-            Location loc = entry.getKey().toLocation().subtract(origin.toLocation()).add(pasteLocation);
+            Location loc = entry.getKey().toLocation();
+            loc.subtract(originLoc);
+            loc.add(pasteLocation);
             world.getBlockAt(loc).setType(entry.getValue());
         }
     }
