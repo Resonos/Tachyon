@@ -46,7 +46,7 @@ public class Schematic implements Serializable {
             Location loc = entry.getKey().toLocation();
             loc.subtract(originLoc);
             loc.add(pasteLocation);
-            BlockChanger.setChunkBlock(loc, entry.getValue());
+            BlockChanger.setSectionBlock(loc, entry.getValue());
             //world.getBlockAt(loc).setType(entry.getValue());
         }
     }
