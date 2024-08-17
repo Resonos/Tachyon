@@ -59,9 +59,11 @@ public class Schematic implements Serializable {
         this.origin = new SerializableLocation(origin);
     }
 
-    public void paste(Location pasteLocation) {
+    public void pasteSync(Location pasteLocation, boolean ignoreAir) {
         Location originLoc = origin.toLocation();
         for (Map.Entry<SerializableLocation, Material> entry : blocks.entrySet()) {
+            if (ignoreAir && entry.getValue() == Material.AIR) continue;
+            
             Location loc = entry.getKey().toLocation();
             loc.subtract(originLoc);
             loc.add(pasteLocation);
@@ -73,7 +75,7 @@ public class Schematic implements Serializable {
         Location originLoc = origin.toLocation();
         for (Map.Entry<SerializableLocation, Material> entry : blocks.entrySet()) {
             if (ignoreAir && entry.getValue() == Material.AIR) continue;
-            
+
             Location loc = entry.getKey().toLocation();
             loc.subtract(originLoc);
             loc.add(pasteLocation);
