@@ -7,4 +7,4 @@ Instead of having to depend on large plugins like WorldEdit, Tachyon is a standa
 - [x] Create Schematics
 - [x] Save/Load Schematics
 - [x] Paste Schematics
-- [x] Fast Serialization & Deserialization using [Kryo](https://github.com/EsotericSoftware/kryo)
+~~- [x] Fast Serialization & Deserialization using [Kryo](https://github.com/EsotericSoftware/kryo)~~ (removed, file too large after adding)
