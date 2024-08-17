@@ -72,6 +72,9 @@ public class Schematic implements Serializable {
     public void pasteAsync(Location pasteLocation) {
         Location originLoc = origin.toLocation();
         for (Map.Entry<SerializableLocation, Material> entry : blocks.entrySet()) {
+            if (entry.getValue() == Material.AIR) {
+                continue;
+            }
             Location loc = entry.getKey().toLocation();
             loc.subtract(originLoc);
             loc.add(pasteLocation);
