@@ -108,12 +108,13 @@ public final class Tachyon extends JavaPlugin {
     }
 
     private void loadSchematic(Player player, String filename) {
-        File file = new File(getDataFolder(), filename + Schematic.getFileExtension());
+        File dir = new File(getDataFolder(), "schematics");
+        File file = new File(dir, filename + Schematic.getFileExtension());
         try (FileInputStream fis = new FileInputStream(file)) {
             Schematic schematic = Schematic.deserialize(fis);
             Schematic.setPlayerSchematic(player.getUniqueId(), schematic);
             player.sendMessage("Schematic loaded successfully.");
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             player.sendMessage("Error loading schematic: " + e.getMessage());
         }

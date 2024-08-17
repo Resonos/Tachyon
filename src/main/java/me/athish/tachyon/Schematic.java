@@ -1,5 +1,7 @@
 package me.athish.tachyon;
 
+import me.athish.tachyon.serialization.SchematicSerializer;
+import me.athish.tachyon.serialization.SerializableLocation;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -9,8 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class Schematic implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Schematic {
     private static final Map<UUID, Schematic> playerSchematics = new HashMap<>();
     private static final String FILE_EXTENSION = ".tachyon";
 
@@ -58,13 +59,11 @@ public class Schematic implements Serializable {
     }
 
     public void serialize(OutputStream os) throws IOException {
-        ObjectOutputStream oos = new ObjectOutputStream(os);
-        oos.writeObject(this);
+        SchematicSerializer.serialize(this, os);
     }
 
-    public static Schematic deserialize(InputStream is) throws IOException, ClassNotFoundException {
-        ObjectInputStream ois = new ObjectInputStream(is);
-        return (Schematic) ois.readObject();
+    public static Schematic deserialize(InputStream is) throws IOException {
+        return SchematicSerializer.deserialize(is);
     }
 
     public static String getFileExtension() {
