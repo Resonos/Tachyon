@@ -8,19 +8,26 @@ Stop having to depend on large plugins like WorldEdit or Limiting Libraries like
 ## Features
 - [x] 🟩 **Easy to Use** 🟩
     - Extremely easy to use, just implement tachyon and look at our simple usage examples!
+  
 - [x] 🌎 **1.8 - 1.20 Version Support** 🌎
     - Create Schematics on any version you please. It is just as fast if not faster on some versions 😉
+  
 - [x] 💎 **Much Smaller than WorldEdit** 💎
     - Stop having to depend on a whole large plugin like worldedit or having to use other schematic libraries that are inefficient or sacrifice version support
+  
 - [x] 🌟 **Faster than WorldEdit** 🌟
     - Tachyon's Pasting system is simply much faster than worldedit :)
+  
 - [x] 🚀 **Fully Asynchronous & Zero TPS Impact** 🚀
     - There won't be any TPS loss no matter the amount of blocks being set. This is because Tachyon places blocks using NMS, thereby bypassing inefficient bukkit methods.
+  
 - [x] 📜 **Custom file extension for schematics 📜**
     - Tachyon uses a custom file extension for schematics which is ".tachyon" by default but you may set it to whatever you'd like by rewriting 1 string.
+  
 - [x] ⚡ **Hyperfast loading & saving of schematics** ⚡
     - Significantly greater speeds for saving and loading schematics, sometimes upto 10x faster than regular java serialization. This is achieved by using 
       much faster serialization methods provided by [Kryo](https://github.com/EsotericSoftware/kryo) **(USE fast-serialization branch for this feature)**
+
 ## TODO
 - [ ] Add Version info for schematics
 - [ ] Add support for rotations
