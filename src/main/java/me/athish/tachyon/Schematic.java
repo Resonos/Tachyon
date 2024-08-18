@@ -9,6 +9,7 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Represents a schematic that can be copied, saved, loaded, and pasted.
@@ -206,6 +207,174 @@ public class Schematic implements Serializable {
             }
         });
     }
+
+    /**
+     * Rotates the schematic by a specified angle (in degrees) clockwise around the origin using matrix transformation
+     * on the block locations for faster and more efficient rotation. Only angles that are multiples of 90 are allowed.
+     * If the angle is not a multiple of 90, it will be rounded to the nearest multiple of 90.
+     *
+     * @param angle The angle of rotation in degrees.
+     */
+    public void rotate(double angle) {
+        Map<SerializableLocation, Material> rotatedBlocks = new ConcurrentHashMap<>();
+        Location originLoc = origin.toLocation();
+
+        // normalize angle to be within the range [0, 360)
+        angle = ((angle % 360) + 360) % 360;
+
+        // round angle to nearest multiple of 90.
+        int roundedAngle = (int) (Math.round(angle / 90.0) * 90);
+
+        // get number of effective rotations. ie when we have to prevent rotating by 540 degrees when we can just rotate by 180 once.
+        int effectiveRotations = roundedAngle / 90;
+
+        blocks.entrySet().parallelStream().forEach(entry -> {
+            Location loc = entry.getKey().toLocation();
+            loc.subtract(originLoc);
+
+            double newX = loc.getX();
+            double newZ = loc.getZ();
+
+            // apply the appropriate matrix transformation based on the effective rotations
+            switch (effectiveRotations) {
+                case 1: // 90 degrees or 1 effective rotation
+                    newX = -loc.getZ();
+                    newZ = loc.getX();
+                    break;
+                case 2: // 180 degrees or 2 effective rotations
+                    newX = -loc.getX();
+                    newZ = -loc.getZ();
+                    break;
+                case 3: // 270 degrees or 3 effective rotations
+                    newX = loc.getZ();
+                    newZ = -loc.getX();
+                    break;
+                default: // no effective rotation
+                    break;
+            }
+
+            loc.setX(newX);
+            loc.setZ(newZ);
+            loc.add(originLoc);
+
+            rotatedBlocks.put(new SerializableLocation(loc), entry.getValue());
+        });
+
+        blocks = rotatedBlocks;
+    }
+
+    /**
+     * Flips the schematic in the specified direction around the origin.
+     *
+     * @param direction The direction to flip. Valid values are "up", "down", "left", "right".
+     */
+    public void flip(String direction) {
+        switch (direction.toLowerCase()) {
+            case "up":
+                flipUp();
+                break;
+            case "down":
+                flipDown();
+                break;
+            case "left":
+                flipLeft();
+                break;
+            case "right":
+                flipRight();
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid flip direction: " + direction);
+        }
+    }
+
+    /**
+     * Flips the schematic upwards around the origin.
+     */
+    private void flipUp() {
+        Map<SerializableLocation, Material> flippedBlocks = new ConcurrentHashMap<>();
+        Location originLoc = origin.toLocation();
+
+        blocks.entrySet().parallelStream().forEach(entry -> {
+            Location loc = entry.getKey().toLocation();
+            loc.subtract(originLoc);
+
+            double newY = -loc.getY();
+
+            loc.setY(newY);
+            loc.add(originLoc);
+
+            flippedBlocks.put(new SerializableLocation(loc), entry.getValue());
+        });
+
+        blocks = flippedBlocks;
+    }
+
+    /**
+     * Flips the schematic downwards around the origin.
+     */
+    private void flipDown() {
+        Map<SerializableLocation, Material> flippedBlocks = new ConcurrentHashMap<>();
+        Location originLoc = origin.toLocation();
+
+        blocks.entrySet().parallelStream().forEach(entry -> {
+            Location loc = entry.getKey().toLocation();
+            loc.subtract(originLoc);
+
+            double newY = -loc.getY();
+
+            loc.setY(newY);
+            loc.add(originLoc);
+
+            flippedBlocks.put(new SerializableLocation(loc), entry.getValue());
+        });
+
+        blocks = flippedBlocks;
+    }
+
+    /**
+     * Flips the schematic to the left around the origin.
+     */
+    private void flipLeft() {
+        Map<SerializableLocation, Material> flippedBlocks = new ConcurrentHashMap<>();
+        Location originLoc = origin.toLocation();
+
+        blocks.entrySet().parallelStream().forEach(entry -> {
+            Location loc = entry.getKey().toLocation();
+            loc.subtract(originLoc);
+
+            double newX = -loc.getX();
+
+            loc.setX(newX);
+            loc.add(originLoc);
+
+            flippedBlocks.put(new SerializableLocation(loc), entry.getValue());
+        });
+
+        blocks = flippedBlocks;
+    }
+
+    /**
+     * Flips the schematic to the right around the origin.
+     */
+    private void flipRight() {
+        Map<SerializableLocation, Material> flippedBlocks = new ConcurrentHashMap<>();
+        Location originLoc = origin.toLocation();
+
+        blocks.entrySet().parallelStream().forEach(entry -> {
+            Location loc = entry.getKey().toLocation();
+            loc.subtract(originLoc);
+
+            double newX = -loc.getX();
+
+            loc.setX(newX);
+            loc.add(originLoc);
+
+            flippedBlocks.put(new SerializableLocation(loc), entry.getValue());
+        });
+
+        blocks = flippedBlocks;
+    }
+
 
     /**
      * Gets the file extension for schematic files.

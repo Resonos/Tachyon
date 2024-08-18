@@ -1,0 +1,8 @@
+name: Tachyon
+main: me.athish.tachyon.ExamplePlugin
+version: 1.0
+description: Implementation of the Tachyon Schematic library.
+commands:
+  schematic:
+    description: Schematic manipulation command
+    usage: /schematic <pos1|pos2|copy|save|load|paste|rotate|flip> [filename]
