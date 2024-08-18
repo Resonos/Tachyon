@@ -1,4 +1,4 @@
-package me.athish.tachyon.block;
+package me.athish.tachyon;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;

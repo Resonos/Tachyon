@@ -1,4 +1,4 @@
-package me.athish.tachyon.serialization;
+package me.athish.tachyon;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

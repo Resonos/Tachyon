@@ -1,9 +1,0 @@
-name: Tachyon
-version: '1.0'
-main: me.athish.tachyon.ExamplePlugin
-api-version: '1.20'
-description: A Schematic system
-commands:
-  schematic:
-    description: Schematic manipulation command
-    usage: /schematic <pos1|pos2|copy|save|load|paste> [filename]

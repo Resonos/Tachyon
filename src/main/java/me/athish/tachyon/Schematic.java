@@ -1,7 +1,5 @@
 package me.athish.tachyon;
 
-import me.athish.tachyon.block.BlockChanger;
-import me.athish.tachyon.serialization.SerializableLocation;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
