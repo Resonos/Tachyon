@@ -27,6 +27,11 @@ Stop having to depend on large plugins like WorldEdit or Limiting Libraries like
 - [x] ⚡ **Hyperfast loading & saving of schematics** ⚡
     - Significantly greater speeds for saving and loading schematics, sometimes upto 10x faster than regular java serialization. This is achieved by using 
       much faster serialization methods provided by [Kryo](https://github.com/EsotericSoftware/kryo) **(USE fast-serialization branch for this feature)**
+- [x] 🛠️ **Schematic Editing** 🛠️
+    - We support direct editing of schematics without having to paste them. This includes:
+      - [x] **Rotations** - Rotate the schematic by any angle multiple of 90 degrees.
+      - [x] **Flipping** - Flip the schematic up , down, left or right.
+      - [x] **Block Replacements** - Replace any block type in the schematic.
 
 ## TODO
 - [ ] Add Version info for schematics
