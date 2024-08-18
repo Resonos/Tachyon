@@ -35,7 +35,7 @@ Stop having to depend on large plugins like WorldEdit or Limiting Libraries like
 
 ## Setup
 
-**Manual**
+**Manual**\
 Just Copy the files into your project.
 
 ## Usage
