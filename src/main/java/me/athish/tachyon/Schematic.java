@@ -375,6 +375,20 @@ public class Schematic implements Serializable {
         blocks = flippedBlocks;
     }
 
+    /**
+     * Replaces all blocks of a certain type inside the schematic.
+     *
+     * @param from The material to be replaced.
+     * @param to   The material to replace with.
+     */
+    public void replaceBlocks(Material from, Material to) {
+        blocks.entrySet().parallelStream().forEach(entry -> {
+            if (entry.getValue() == from) {
+                entry.setValue(to);
+            }
+        });
+    }
+
 
     /**
      * Gets the file extension for schematic files.
