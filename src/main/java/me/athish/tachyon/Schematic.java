@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
  * Represents a schematic that can be copied, saved, loaded, and pasted.
  * The schematic stores blocks and their locations relative to an origin.
  */
+@SuppressWarnings("all")
 public class Schematic implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final String FILE_EXTENSION = ".tachyon";
