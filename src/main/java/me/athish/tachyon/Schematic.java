@@ -389,6 +389,14 @@ public class Schematic implements Serializable {
         });
     }
 
+    /**
+     * Gets the number of blocks in the schematic.
+     *
+     * @return The number of blocks in the schematic.
+     */
+    public int getBlockCount() {
+        return blocks.size();
+    }
 
     /**
      * Gets the file extension for schematic files.

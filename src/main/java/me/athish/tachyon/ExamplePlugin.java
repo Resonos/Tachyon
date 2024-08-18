@@ -93,7 +93,8 @@ public final class ExamplePlugin extends JavaPlugin {
     long start = System.currentTimeMillis();
     Schematic.createAsync(first, second, player.getLocation()).thenAccept(schematic -> {
       schematics.put(player.getUniqueId(), schematic);
-      player.sendMessage("Blocks copied successfully. " + (System.currentTimeMillis() - start) + " ms");
+      long end = (System.currentTimeMillis() - start);
+      player.sendMessage("Blocks copied successfully. (" + schematic.getBlockCount() + " blocks) ("  + end+ " ms)");
     }).exceptionally(e -> {
       player.sendMessage("Error creating schematic: " + e.getMessage());
       return null;
@@ -130,7 +131,8 @@ public final class ExamplePlugin extends JavaPlugin {
       long start = System.currentTimeMillis();
       Schematic.createAsync(file).thenAccept(schematic -> {
         schematics.put(player.getUniqueId(), schematic);
-        player.sendMessage("Schematic created and stored successfully."  + (System.currentTimeMillis() - start) + " ms");
+        long end = (System.currentTimeMillis() - start);
+        player.sendMessage("Schematic loaded successfully. (" + schematic.getBlockCount() + " blocks) ("  + end+ " ms)");
       }).exceptionally(e -> {
         player.sendMessage("Error loading schematic: " + e.getMessage());
         return null;
@@ -149,7 +151,7 @@ public final class ExamplePlugin extends JavaPlugin {
     Location pasteLocation = player.getLocation();
     long start = System.currentTimeMillis();
     schematic.pasteAsync(pasteLocation, true).thenRun(() ->
-                    player.sendMessage("Schematic pasted successfully. " + (System.currentTimeMillis() - start) + " ms"))
+    player.sendMessage("Schematic pasted successfully. (" + schematic.getBlockCount() + " blocks) ("  + (System.currentTimeMillis() - start)+ " ms)"))
             .exceptionally(e -> {
               player.sendMessage("Error pasting schematic: " + e.getMessage());
               return null;
@@ -164,7 +166,8 @@ public final class ExamplePlugin extends JavaPlugin {
     }
     long start = System.currentTimeMillis();
     schematic.rotate(angle);
-    player.sendMessage("Schematic rotated successfully. " + (System.currentTimeMillis() - start) + " ms");
+    long end = (System.currentTimeMillis() - start);
+    player.sendMessage("Schematic rotated successfully. (" + schematic.getBlockCount() + " blocks) ("  + end+ " ms)");
   }
 
   private void flipSchematic(Player player, String direction) {
@@ -175,6 +178,7 @@ public final class ExamplePlugin extends JavaPlugin {
     }
     long start = System.currentTimeMillis();
     schematic.flip(direction);
-    player.sendMessage("Schematic flipped successfully. " + (System.currentTimeMillis() - start) + " ms");
+    long end = (System.currentTimeMillis() - start);
+    player.sendMessage("Schematic flipped successfully. (" + schematic.getBlockCount() + " blocks) ("  + end+ " ms)");
   }
 }
