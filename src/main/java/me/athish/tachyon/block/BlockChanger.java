@@ -18,8 +18,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -30,6 +28,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @version 1.8.2
@@ -1602,7 +1602,7 @@ public class BlockChanger {
 		return null;
 	}
 
-	private static Object getNMSWorld(@Nonnull World world) {
+	private static Object getNMSWorld(@NotNull World world) {
 		try {
 			return WORLD_GET_HANDLE.invoke(world);
 		} catch (Throwable e) {
@@ -1779,7 +1779,7 @@ public class BlockChanger {
 	 * @return nms block data from bukkit item stack
 	 * @throws IllegalArgumentException if material is not a block
 	 */
-	public static @Nonnull Object getBlockData(@Nonnull ItemStack itemStack) {
+	public static @NotNull Object getBlockData(@NotNull ItemStack itemStack) {
 		Object blockData = BLOCK_DATA_GETTER.fromItemStack(itemStack);
 		if (blockData == null) throw new IllegalArgumentException("Couldn't convert specified itemstack to block data");
 		return blockData;
@@ -1804,7 +1804,7 @@ public class BlockChanger {
 	 * @param block bukkit block to cast to nms block data
 	 * @return nms block data from bukkit block
 	 */
-	public static @Nonnull Object getBlockData(Block block) {
+	public static @NotNull Object getBlockData(Block block) {
 		Object blockData = BLOCK_DATA_GETTER.fromBlock(block);
 		return blockData != null ? blockData : AIR_BLOCK_DATA;
 	}
@@ -3077,7 +3077,7 @@ final class ReflectionUtils {
 	 * @since 4.0.0
 	 */
 	@Nullable
-	public static Class<?> getNMSClass(@Nullable String packageName, @Nonnull String name) {
+	public static Class<?> getNMSClass(@Nullable String packageName, @NotNull String name) {
 		if (packageName != null && supports(17)) name = packageName + '.' + name;
 
 		try {
@@ -3095,7 +3095,7 @@ final class ReflectionUtils {
 	 * @since 1.0.0
 	 */
 	@Nullable
-	public static Class<?> getNMSClass(@Nonnull String name) {
+	public static Class<?> getNMSClass(@NotNull String name) {
 		return getNMSClass(null, name);
 	}
 
@@ -3109,8 +3109,8 @@ final class ReflectionUtils {
 	 * @see #sendPacketSync(Player, Object...)
 	 * @since 1.0.0
 	 */
-	@Nonnull
-	public static CompletableFuture<Void> sendPacket(@Nonnull Player player, @Nonnull Object... packets) {
+	@NotNull
+	public static CompletableFuture<Void> sendPacket(@NotNull Player player, @NotNull Object... packets) {
 		return CompletableFuture.runAsync(() -> sendPacketSync(player, packets)).exceptionally(ex -> {
 			ex.printStackTrace();
 			return null;
@@ -3125,7 +3125,7 @@ final class ReflectionUtils {
 	 * @see #sendPacket(Player, Object...)
 	 * @since 2.0.0
 	 */
-	public static void sendPacketSync(@Nonnull Player player, @Nonnull Object... packets) {
+	public static void sendPacketSync(@NotNull Player player, @NotNull Object... packets) {
 		try {
 			Object handle = GET_HANDLE.invoke(player);
 			Object connection = PLAYER_CONNECTION.invoke(handle);
@@ -3141,7 +3141,7 @@ final class ReflectionUtils {
 	}
 
 	@Nullable
-	public static Object getHandle(@Nonnull Player player) {
+	public static Object getHandle(@NotNull Player player) {
 		Objects.requireNonNull(player, "Cannot get handle of null player");
 		try {
 			return GET_HANDLE.invoke(player);
@@ -3152,7 +3152,7 @@ final class ReflectionUtils {
 	}
 
 	@Nullable
-	public static Object getConnection(@Nonnull Player player) {
+	public static Object getConnection(@NotNull Player player) {
 		Objects.requireNonNull(player, "Cannot get connection of null player");
 		try {
 			Object handle = GET_HANDLE.invoke(player);
@@ -3171,7 +3171,7 @@ final class ReflectionUtils {
 	 * @since 1.0.0
 	 */
 	@Nullable
-	public static Class<?> getCraftClass(@Nonnull String name) {
+	public static Class<?> getCraftClass(@NotNull String name) {
 		try {
 			return Class.forName(CRAFTBUKKIT_PACKAGE + name);
 		} catch (ClassNotFoundException ex) {
