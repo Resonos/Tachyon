@@ -52,11 +52,6 @@
 
     <repositories>
         <repository>
-            <id>sonatype-snapshots</id>
-            <name>sonatype snapshots repo</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </repository>
-        <repository>
             <id>spigotmc-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
@@ -72,11 +67,6 @@
             <artifactId>spigot-api</artifactId>
             <version>1.20.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.esotericsoftware.kryo</groupId>
-            <artifactId>kryo5</artifactId>
-            <version>5.6.1-SNAPSHOT</version>
         </dependency>
 
     </dependencies>

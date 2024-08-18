@@ -13,9 +13,6 @@ public class SerializableLocation implements Serializable {
     private float yaw, pitch;
 
 
-    public SerializableLocation() {
-    }
-
     public SerializableLocation(Location location) {
         this.worldName = location.getWorld().getName();
         this.x = location.getX();

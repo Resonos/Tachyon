@@ -1,8 +1,5 @@
 package me.athish.tachyon;
 
-import com.esotericsoftware.kryo.kryo5.Kryo;
-import com.esotericsoftware.kryo.kryo5.io.Input;
-import com.esotericsoftware.kryo.kryo5.io.Output;
 import me.athish.tachyon.block.BlockChanger;
 import me.athish.tachyon.serialization.SerializableLocation;
 import org.bukkit.Location;
@@ -18,26 +15,16 @@ import java.util.concurrent.CompletableFuture;
 public class Schematic implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final String FILE_EXTENSION = ".tachyon";
-    private static final Kryo kryo = new Kryo();
 
     private Map<SerializableLocation, Material> blocks = new HashMap<>();
     private SerializableLocation origin;
 
-    static {
-        kryo.register(Schematic.class);
-        kryo.register(HashMap.class);
-        kryo.register(SerializableLocation.class);
-        kryo.register(Material.class);
-    }
-
-    private Schematic() {
-    }
 
     private Schematic(Location start, Location end, Location origin) {
         copyBlocks(start, end, origin);
     }
 
-    private Schematic(File file) throws IOException {
+    private Schematic(File file) throws IOException, ClassNotFoundException {
         load(file);
     }
 
@@ -89,8 +76,8 @@ public class Schematic implements Serializable {
     }
 
     public void save(File file) throws IOException {
-        try (Output output = new Output(new FileOutputStream(file))) {
-            kryo.writeObject(output, this);
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+            oos.writeObject(this);
         }
     }
 
@@ -104,9 +91,9 @@ public class Schematic implements Serializable {
         });
     }
 
-    public void load(File file) throws IOException {
-        try (Input input = new Input(new FileInputStream(file))) {
-            Schematic loadedSchematic = kryo.readObject(input, Schematic.class);
+    public void load(File file) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+            Schematic loadedSchematic = (Schematic) ois.readObject();
             this.blocks = loadedSchematic.blocks;
             this.origin = loadedSchematic.origin;
         }
@@ -116,7 +103,7 @@ public class Schematic implements Serializable {
         return CompletableFuture.runAsync(() -> {
             try {
                 load(file);
-            } catch (IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -130,7 +117,7 @@ public class Schematic implements Serializable {
         return CompletableFuture.supplyAsync(() -> new Schematic(start, end, origin));
     }
 
-    public static Schematic create(File file) throws IOException {
+    public static Schematic create(File file) throws IOException, ClassNotFoundException {
         return new Schematic(file);
     }
 
@@ -138,7 +125,7 @@ public class Schematic implements Serializable {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return new Schematic(file);
-            } catch (IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         });
