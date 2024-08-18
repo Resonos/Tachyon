@@ -11,9 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public final class Tachyon extends JavaPlugin {
+public final class ExamplePlugin extends JavaPlugin {
     private final Map<UUID, Location> firstPoints = new HashMap<>();
     private final Map<UUID, Location> secondPoints = new HashMap<>();
+    private final Map<UUID, Schematic> schematics = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -78,61 +79,69 @@ public final class Tachyon extends JavaPlugin {
             player.sendMessage("Please set both positions first.");
             return;
         }
-
-        Schematic schematic = new Schematic(first, second);
-        schematic.setOrigin(player.getLocation());
-        Schematic.setPlayerSchematic(player.getUniqueId(), schematic);
-        player.sendMessage("Blocks copied successfully.");
+        long start = System.currentTimeMillis();
+        Schematic.createAsync(first, second, player.getLocation()).thenAccept(schematic -> {
+            schematics.put(player.getUniqueId(), schematic);
+            player.sendMessage("Blocks copied successfully. " + (System.currentTimeMillis() - start) + " ms");
+        }).exceptionally(e -> {
+            player.sendMessage("Error creating schematic: " + e.getMessage());
+            return null;
+        });
     }
 
     private void saveSchematic(Player player, String filename) {
-        Schematic schematic = Schematic.getPlayerSchematic(player.getUniqueId());
+        Schematic schematic = schematics.get(player.getUniqueId());
         if (schematic == null) {
-            player.sendMessage("No schematic copied. Use /schematic copy first.");
+            player.sendMessage("Please copy a schematic first.");
             return;
         }
-
         File dir = new File(getDataFolder(), "schematics");
         if (!dir.exists()) {
             dir.mkdirs();
         }
 
         File file = new File(dir, filename + Schematic.getFileExtension());
-        try (FileOutputStream fos = new FileOutputStream(file)) {
-            schematic.serialize(fos);
-            player.sendMessage("Schematic saved successfully.");
-        } catch (IOException e) {
-            e.printStackTrace();
-            player.sendMessage("Error saving schematic: " + e.getMessage());
+        if (file.exists()) {
+            player.sendMessage("A schematic with that name already exists.");
+            return;
         }
+        long start = System.currentTimeMillis();
+        schematic.saveAsync(file).thenRun(() -> player.sendMessage("Schematic saved successfully." + (System.currentTimeMillis() - start) + " ms"))
+                .exceptionally(e -> {
+                    player.sendMessage("Error saving schematic: " + e.getMessage());
+                    return null;
+                });
     }
 
-    private void loadSchematic(Player player, String filename) {
-        File dir = new File(getDataFolder(), "schematics");
-        File file = new File(dir, filename + Schematic.getFileExtension());
-        try (FileInputStream fis = new FileInputStream(file)) {
-            Schematic schematic = Schematic.deserialize(fis);
-            Schematic.setPlayerSchematic(player.getUniqueId(), schematic);
-            player.sendMessage("Schematic loaded successfully.");
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void loadSchematic(Player player, String filename)  {
+        try {
+            File file = new File(getDataFolder(), "schematics/" + filename + Schematic.getFileExtension());
+            long start = System.currentTimeMillis();
+            Schematic.createAsync(file).thenAccept(schematic -> {
+                schematics.put(player.getUniqueId(), schematic);
+                player.sendMessage("Schematic created and stored successfully."  + (System.currentTimeMillis() - start) + " ms");
+            }).exceptionally(e -> {
+                player.sendMessage("Error loading schematic: " + e.getMessage());
+                return null;
+            });
+        } catch (Exception e) {
             player.sendMessage("Error loading schematic: " + e.getMessage());
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         }
     }
 
     private void pasteSchematic(Player player) {
-        Schematic schematic = Schematic.getPlayerSchematic(player.getUniqueId());
+        Schematic schematic = schematics.get(player.getUniqueId());
         if (schematic == null) {
-            player.sendMessage("No schematic loaded. Use /schematic load first.");
+            player.sendMessage("Please load/copy a schematic first.");
             return;
         }
-
         Location pasteLocation = player.getLocation();
         long start = System.currentTimeMillis();
-        schematic.pasteAsync(pasteLocation);
-        long end = System.currentTimeMillis();
-        player.sendMessage("Schematic pasted successfully in " + (end - start) + "ms.");
+        schematic.pasteAsync(pasteLocation, true).thenRun(() ->
+                        player.sendMessage("Schematic pasted successfully. " + (System.currentTimeMillis() - start) + " ms"))
+                .exceptionally(e -> {
+                    player.sendMessage("Error pasting schematic: " + e.getMessage());
+                    return null;
+                });
     }
 }

@@ -1,6 +1,6 @@
 name: Tachyon
 version: '1.0'
-main: me.athish.tachyon.Tachyon
+main: me.athish.tachyon.ExamplePlugin
 api-version: '1.20'
 description: A Schematic system
 commands:
