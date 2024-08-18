@@ -17,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 @SuppressWarnings("all")
 public class Schematic implements Serializable {
     private static final long serialVersionUID = 1L;
+    // Set your custom schematic file extension here.
     private static final String FILE_EXTENSION = ".tachyon";
 
     private Map<SerializableLocation, Material> blocks = new HashMap<>();
