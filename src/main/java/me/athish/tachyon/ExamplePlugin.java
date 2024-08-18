@@ -70,6 +70,7 @@ public final class ExamplePlugin extends JavaPlugin {
           return true;
         }
         rotateSchematic(player, Double.parseDouble(args[1]));
+        break;
       case "flip":
         if (args.length < 2) {
           player.sendMessage("Usage: /schematic flip <up|down|left|right>");
