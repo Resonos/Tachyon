@@ -6,7 +6,9 @@ import org.bukkit.World;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,7 +23,7 @@ public class Schematic implements Serializable {
     // Set your custom schematic file extension here.
     private static final String FILE_EXTENSION = ".tachyon";
 
-    private Map<SerializableLocation, Material> blocks = new HashMap<>();
+    private Map<SerializableLocation, Material> blocks = new ConcurrentHashMap<>();
     private SerializableLocation origin;
 
     /**
@@ -64,14 +66,21 @@ public class Schematic implements Serializable {
 
         this.origin = new SerializableLocation(origin);
 
+        // Create a list of all coordinates within the specified range
+        List<int[]> coordinates = new ArrayList<>();
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
-                    Location loc = new Location(world, x, y, z);
-                    blocks.put(new SerializableLocation(loc), world.getBlockAt(loc).getType());
+                    coordinates.add(new int[]{x, y, z});
                 }
             }
         }
+
+        // Use parallelStream to process the coordinates in parallel
+        coordinates.parallelStream().forEach(coord -> {
+            Location loc = new Location(world, coord[0], coord[1], coord[2]);
+            blocks.put(new SerializableLocation(loc), world.getBlockAt(loc).getType());
+        });
     }
 
     /**
