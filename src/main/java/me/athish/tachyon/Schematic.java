@@ -1,5 +1,8 @@
 package me.athish.tachyon;
 
+import com.esotericsoftware.kryo.kryo5.Kryo;
+import com.esotericsoftware.kryo.kryo5.io.Input;
+import com.esotericsoftware.kryo.kryo5.io.Output;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -7,7 +10,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -22,9 +24,19 @@ public class Schematic implements Serializable {
     private static final long serialVersionUID = 1L;
     // Set your custom schematic file extension here.
     private static final String FILE_EXTENSION = ".tachyon";
+    private static final Kryo kryo = new Kryo();
 
     private Map<SerializableLocation, Material> blocks = new ConcurrentHashMap<>();
     private SerializableLocation origin;
+
+
+    static {
+        kryo.register(Schematic.class);
+        kryo.register(ConcurrentHashMap.class);
+        kryo.register(SerializableLocation.class);
+        kryo.register(Material.class);
+    }
+
 
     /**
      * Creates a new Schematic by copying blocks between two locations.
@@ -129,8 +141,8 @@ public class Schematic implements Serializable {
      * @throws IOException If an I/O error occurs.
      */
     public void save(File file) throws IOException {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-            oos.writeObject(this);
+        try (Output output = new Output(new FileOutputStream(file))) {
+            kryo.writeObject(output, this);
         }
     }
 
@@ -157,9 +169,9 @@ public class Schematic implements Serializable {
      * @throws IOException            If an I/O error occurs.
      * @throws ClassNotFoundException If the class of a serialized object cannot be found.
      */
-    public void load(File file) throws IOException, ClassNotFoundException {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-            Schematic loadedSchematic = (Schematic) ois.readObject();
+    public void load(File file) throws IOException {
+        try (Input input = new Input(new FileInputStream(file))) {
+            Schematic loadedSchematic = kryo.readObject(input, Schematic.class);
             this.blocks = loadedSchematic.blocks;
             this.origin = loadedSchematic.origin;
         }
