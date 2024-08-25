@@ -29,6 +29,8 @@ public class Schematic implements Serializable {
     private Map<SerializableLocation, Material> blocks = new ConcurrentHashMap<>();
     private SerializableLocation origin;
 
+    public Schematic() {
+    }
 
     static {
         kryo.register(Schematic.class);
