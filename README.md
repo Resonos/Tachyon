@@ -3,8 +3,6 @@ A Easy to Use, Fast, Cross-Version schematic library.
 
 Stop having to depend on large plugins like WorldEdit or Limiting Libraries like NeoSchematic. Tachyon allows you to create, save, load & paste schematics easily & Efficiently.
 
-**Note: If you want much faster file loading & saving speeds (upto 10x faster), then use fast-serialization branch. The downside is that it increases jar size by 500kb for the library**
-
 ## Features
 - [x] 🟩 **Easy to Use** 🟩
     - Extremely easy to use, just implement tachyon and look at our simple usage examples!
@@ -25,8 +23,7 @@ Stop having to depend on large plugins like WorldEdit or Limiting Libraries like
     - Tachyon uses a custom file extension for schematics which is ".tachyon" by default but you may set it to whatever you'd like by rewriting 1 string.
   
 - [x] ⚡ **Hyperfast loading & saving of schematics** ⚡
-    - Significantly greater speeds for saving and loading schematics, sometimes upto 10x faster than regular java serialization. This is achieved by using 
-      much faster serialization methods provided by [Kryo](https://github.com/EsotericSoftware/kryo) **(USE fast-serialization branch for this feature)**
+    - Significantly greater speeds for saving and loading schematics, sometimes upto 10x faster than regular java serialization.
 - [x] 🛠️ **Schematic Editing** 🛠️
     - We support direct editing of schematics without having to paste them. This includes:
       - [x] **Rotations** - Rotate the schematic by any angle multiple of 90 degrees.
