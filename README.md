@@ -32,7 +32,7 @@ Stop having to depend on large plugins like WorldEdit or Limiting Libraries like
 
 ## TODO
 - [ ] Add Version info for schematics
-- [ ] Add support for rotations
+- [ ] Fix block rotations
 
 
 ## Setup
