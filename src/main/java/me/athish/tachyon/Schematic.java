@@ -12,19 +12,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Represents a schematic that can be copied, saved, loaded, and pasted.
  * The schematic stores blocks and their locations relative to an origin.
  */
 @SuppressWarnings("all")
-public class Schematic implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Schematic {
     // Set your custom schematic file extension here.
     private static final String FILE_EXTENSION = ".tachyon";
 
     private Map<SerializableLocation, Material> blocks = new ConcurrentHashMap<>();
     private SerializableLocation origin;
+    private SerializableLocation min;
+    private SerializableLocation max;
 
     /**
      * Creates a new Schematic by copying blocks between two locations.
@@ -34,6 +37,8 @@ public class Schematic implements Serializable {
      * @param origin The origin location for the schematic.
      */
     private Schematic(Location start, Location end, Location origin) {
+        this.min = new SerializableLocation(start);
+        this.max = new SerializableLocation(end);
         copyBlocks(start, end, origin);
     }
 
@@ -129,8 +134,51 @@ public class Schematic implements Serializable {
      * @throws IOException If an I/O error occurs.
      */
     public void save(File file) throws IOException {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
-            oos.writeObject(this);
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new GZIPOutputStream(new FileOutputStream(file))))) {
+            // Write world name, pitch, and yaw once
+            writer.write(origin.getWorldName() + ",");
+            writer.write((int) origin.getYaw() + ",");
+            writer.write((int) origin.getPitch() + ",");
+
+            // Write origin coordinates
+            writer.write((int) origin.getX() + ",");
+            writer.write((int) origin.getY() + ",");
+            writer.write((int) origin.getZ() + ",");
+
+            // Write cuboid bounds
+            int cuboidMinX = (int) Math.min(min.getX(), max.getX());
+            int cuboidMinY = (int) Math.min(min.getY(), max.getY());
+            int cuboidMinZ = (int) Math.min(min.getZ(), max.getZ());
+            int cuboidMaxX = (int) Math.max(min.getX(), max.getX());
+            int cuboidMaxY = (int) Math.max(min.getY(), max.getY());
+            int cuboidMaxZ = (int) Math.max(min.getZ(), max.getZ());
+
+            writer.write(cuboidMinX + ",");
+            writer.write(cuboidMinY + ",");
+            writer.write(cuboidMinZ + ",");
+            writer.write(cuboidMaxX + ",");
+            writer.write(cuboidMaxY + ",");
+            writer.write(cuboidMaxZ + ",");
+
+            // Write blocks grouped by material
+            Map<Material, List<Location>> materialBlocks = new HashMap<>();
+            Location originLoc = origin.toLocation();
+            for (Map.Entry<SerializableLocation, Material> entry : blocks.entrySet()) {
+                if (entry.getValue() != Material.AIR) {
+                    materialBlocks.computeIfAbsent(entry.getValue(), k -> new ArrayList<>())
+                            .add(entry.getKey().toLocation().subtract(originLoc));
+                }
+            }
+
+            writer.write(materialBlocks.size() + ",");
+            for (Map.Entry<Material, List<Location>> entry : materialBlocks.entrySet()) {
+                writer.write(entry.getKey().name() + ",");
+                writer.write(entry.getValue().size() + ",");
+                for (Location loc : entry.getValue()) {
+                    writer.write((int) loc.getX() + "," + (int) loc.getY() + "," + (int) loc.getZ() + ",");
+                    writer.write((int) loc.getYaw() + "," + (int) loc.getPitch() + ",");
+                }
+            }
         }
     }
 
@@ -157,11 +205,60 @@ public class Schematic implements Serializable {
      * @throws IOException            If an I/O error occurs.
      * @throws ClassNotFoundException If the class of a serialized object cannot be found.
      */
-    public void load(File file) throws IOException, ClassNotFoundException {
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-            Schematic loadedSchematic = (Schematic) ois.readObject();
-            this.blocks = loadedSchematic.blocks;
-            this.origin = loadedSchematic.origin;
+    public void load(File file) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file))))) {
+            String[] data = reader.readLine().split(",");
+            int index = 0;
+
+            // Read world name, pitch, and yaw once
+            String worldName = data[index++];
+            float yaw = Integer.parseInt(data[index++]);
+            float pitch = Integer.parseInt(data[index++]);
+
+            // Read origin coordinates
+            double originX = Integer.parseInt(data[index++]);
+            double originY = Integer.parseInt(data[index++]);
+            double originZ = Integer.parseInt(data[index++]);
+            this.origin = new SerializableLocation(worldName, originX, originY, originZ, yaw, pitch);
+
+            // Read cuboid bounds
+            double cuboidMinX = Integer.parseInt(data[index++]);
+            double cuboidMinY = Integer.parseInt(data[index++]);
+            double cuboidMinZ = Integer.parseInt(data[index++]);
+            double cuboidMaxX = Integer.parseInt(data[index++]);
+            double cuboidMaxY = Integer.parseInt(data[index++]);
+            double cuboidMaxZ = Integer.parseInt(data[index++]);
+
+            // Read blocks grouped by material
+            int materialCount = Integer.parseInt(data[index++]);
+            Location originLoc = origin.toLocation();
+            World world = originLoc.getWorld();
+            for (int i = 0; i < materialCount; i++) {
+                Material material = Material.valueOf(data[index++]);
+                int blockCount = Integer.parseInt(data[index++]);
+                for (int j = 0; j < blockCount; j++) {
+                    double x = Integer.parseInt(data[index++]);
+                    double y = Integer.parseInt(data[index++]);
+                    double z = Integer.parseInt(data[index++]);
+                    float blockYaw = Integer.parseInt(data[index++]);
+                    float blockPitch = Integer.parseInt(data[index++]);
+                    Location relativeLoc = new Location(world, x, y, z, blockYaw, blockPitch).add(originLoc);
+                    this.blocks.put(new SerializableLocation(relativeLoc), material);
+                }
+            }
+
+            // Fill the rest with air blocks if needed
+            for (double x = cuboidMinX; x <= cuboidMaxX; x++) {
+                for (double y = cuboidMinY; y <= cuboidMaxY; y++) {
+                    for (double z = cuboidMinZ; z <= cuboidMaxZ; z++) {
+                        Location loc = new Location(world, x, y, z).add(originLoc);
+                        SerializableLocation serializableLoc = new SerializableLocation(loc);
+                        if (!blocks.containsKey(serializableLoc)) {
+                            blocks.put(serializableLoc, Material.AIR);
+                        }
+                    }
+                }
+            }
         }
     }
 
