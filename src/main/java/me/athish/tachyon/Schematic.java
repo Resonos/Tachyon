@@ -100,6 +100,7 @@ public class Schematic {
             if (ignoreAir && entry.getValue() == Material.AIR) continue;
 
             Location loc = entry.getKey().toLocation();
+            loc.setWorld(pasteLocation.getWorld());
             loc.subtract(originLoc);
             loc.add(pasteLocation);
             BlockChanger.setSectionBlock(loc, entry.getValue());
@@ -120,6 +121,7 @@ public class Schematic {
                 if (ignoreAir && entry.getValue() == Material.AIR) continue;
 
                 Location loc = entry.getKey().toLocation();
+                loc.setWorld(pasteLocation.getWorld());
                 loc.subtract(originLoc);
                 loc.add(pasteLocation);
                 BlockChanger.setSectionBlockAsynchronously(loc, new ItemStack(entry.getValue()), false);
