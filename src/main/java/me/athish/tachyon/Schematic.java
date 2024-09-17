@@ -215,7 +215,8 @@ public class Schematic {
 
             // Read world name, pitch, and yaw once
             String worldName = data[index++];
-            if (worldName == null) worldName = Bukkit.getWorlds().get(0).getName();
+            if (Bukkit.getWorld(worldName) == null) worldName = Bukkit.getWorlds().get(0).getName();
+
             float yaw = Integer.parseInt(data[index++]);
             float pitch = Integer.parseInt(data[index++]);
 
